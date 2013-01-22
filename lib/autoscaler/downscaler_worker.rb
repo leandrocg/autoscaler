@@ -10,7 +10,7 @@ module Autoscaler
       unless pending_work? || scheduled_work? || retry_work?
         scaler.workers = 0
       else
-        self.schedule_downscaler(timeout, specified_queues)
+        self.schedule(scaler, timeout, specified_queues)
       end
     end
 
