@@ -8,7 +8,7 @@ Tested on Ruby 1.9.2 and Heroku Cedar stack.
 
 ## Installation
 
-    gem install sidekiq
+    gem install autoscaler
 
 ## Getting Started
 
