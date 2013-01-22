@@ -6,6 +6,7 @@ examples/simple.rb
 Gemfile
 Gemfile.lock
 Guardfile
+lib/autoscaler/downscaler_worker.rb
 lib/autoscaler/heroku_scaler.rb
 lib/autoscaler/sidekiq.rb
 lib/autoscaler/version.rb

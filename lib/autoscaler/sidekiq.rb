@@ -15,7 +15,8 @@ module Autoscaler
 
       # Sidekiq middleware api method
       def call(worker_class, item, queue)
-        @scalers[queue] && @scalers[queue].workers = 1
+        #@scalers[queue] && @scalers[queue].workers = 1
+        puts "scaling up"
         yield
       end
     end
@@ -38,58 +39,16 @@ module Autoscaler
         yield
       ensure
         working!
-        wait_for_task_or_scale
+        schedule_downscaler_worker unless queue == "downscale"
       end
 
       private
-      def queues
-        @specified_queues || registered_queues
-      end
-
-      def registered_queues
-        ::Sidekiq.redis { |x| x.smembers('queues') }
-      end
-
-      def empty?(name)
-        ::Sidekiq.redis { |conn| conn.llen("queue:#{name}") == 0 }
-      end
-      
-      def scheduled_work?
-        ::Sidekiq.redis { |c| c.zcard("schedule") > 0 } 
-      end
-      
-      def retry_work?
-        ::Sidekiq.redis { |c| c.zcard("retry") > 0 } 
-      end  
-
-      def pending_work?
-        queues.any? {|q| !empty?(q)}
-      end
-
-      def wait_for_task_or_scale
-        loop do
-          return if pending_work?
-          return if scheduled_work?
-          return if retry_work?
-          return @scaler.workers = 0 if idle?
-          sleep(0.5)
-        end
+      def schedule_downscaler_worker
+        Autoscaler::DownscalerWorker.schedule(@scaler, @timeout, @specified_queues)
       end
 
       def working!
         ::Sidekiq.redis {|c| c.set('background_activity', Time.now)}
-      end
-
-      def idle_time
-        ::Sidekiq.redis {|c|
-          t = c.get('background_activity')
-          return 0 unless t
-          Time.now - Time.parse(t)
-        }
-      end
-
-      def idle?
-        idle_time > @timeout
       end
     end
   end

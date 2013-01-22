@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "autoscaler"
 
   s.files         = <<MANIFEST.split("\n")
+lib/autoscaler/downscaler_worker.rb
 lib/autoscaler/heroku_scaler.rb
 lib/autoscaler/sidekiq.rb
 lib/autoscaler/version.rb
