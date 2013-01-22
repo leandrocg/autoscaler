@@ -8,8 +8,7 @@ module Autoscaler
       @specified_queues = specified_queues
 
       unless pending_work? || scheduled_work? || retry_work?
-        #scaler.workers = 0
-        puts "scaling down"
+        scaler.workers = 0
       else
         self.schedule_downscaler(timeout, specified_queues)
       end

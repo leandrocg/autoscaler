@@ -15,8 +15,7 @@ module Autoscaler
 
       # Sidekiq middleware api method
       def call(worker_class, item, queue)
-        #@scalers[queue] && @scalers[queue].workers = 1
-        puts "scaling up"
+        @scalers[queue] && @scalers[queue].workers = 1
         yield
       end
     end
